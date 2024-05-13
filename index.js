@@ -16,7 +16,7 @@ app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "public")));
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/windowbnb";
+const MONGO_URL = "mongodb://127.0.0.1:27017/stayhub";
 
 main()
   .then(() => console.log("connected to DB"))
