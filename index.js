@@ -5,6 +5,8 @@ const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
 const ExpressError = require("./utils/ExpressError");
+const session = require("express-session");
+const flash = require("connect-flash");
 
 const listings = require("./routes/listing");
 const reviews = require("./routes/review");
@@ -38,8 +40,28 @@ async function main() {
 //   console.log(res);
 // });
 
+const sessionOptions = {
+  secret: "mysecretcode",
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    expires: Date.now() + 7 * 24 * 60 * 60 * 1000,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+  },
+};
+
 app.get("/", (req, res) => {
   res.send("Hello World");
+});
+
+app.use(session(sessionOptions));
+app.use(flash());
+
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
+  next();
 });
 
 app.use("/listings", listings);
@@ -52,7 +74,7 @@ app.all("*", (req, res, next) => {
 });
 
 app.use((err, req, res, next) => {
-  let { statusCode, message } = err;
+  let { statusCode = 500, message = "Something Went Wrong!" } = err;
   // res.status(statusCode).send(message);
   res.status(statusCode).render("error.ejs", { message });
 });
