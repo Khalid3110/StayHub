@@ -45,7 +45,7 @@ router.post(
   }),
   (req, res) => {
     req.flash("success", "Welcome back to StayHub!");
-    let redirectUrl = req.locals.redirectUrl || "/listings";
+    let redirectUrl = res.locals.redirectUrl || "/listings";
     res.redirect(redirectUrl);
   }
 );
