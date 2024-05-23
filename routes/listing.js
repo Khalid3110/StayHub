@@ -4,7 +4,7 @@ const Listing = require("../models/listing.model");
 const wrapAsync = require("../utils/wrapAsync");
 const ExpressError = require("../utils/ExpressError");
 const { listingSchema } = require("../schema");
-const { isLoggedIn } = require("../middleware");
+const { isLoggedIn, isOwner } = require("../middleware");
 
 // Joi Validation middleware(server side)
 const validateListing = (req, res, next) => {
@@ -37,7 +37,9 @@ router.get(
   "/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    let data = await Listing.findById(id).populate("reviews").populate("owner");
+    let data = await Listing.findById(id)
+      .populate({ path: "reviews", populate: { path: "author" } })
+      .populate("owner");
     // console.log(data);
     // console.log(data.price.toLocaleString("en-IN"));
     if (!data) {
@@ -85,6 +87,7 @@ router.post(
 router.get(
   "/:id/edit",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     let data = await Listing.findById(id);
@@ -100,6 +103,7 @@ router.get(
 router.put(
   "/:id",
   isLoggedIn,
+  isOwner,
   validateListing,
   wrapAsync(async (req, res) => {
     if (!req.body.listing) {
@@ -116,6 +120,7 @@ router.put(
 router.delete(
   "/:id",
   isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     let deletedListing = await Listing.findByIdAndDelete(id);

@@ -21,6 +21,7 @@
     </div>
   </div>
 
+  <% if (currUser && currUser._id.equals(data.owner._id)) { %>
   <div class="btns mb-2">
     <a
       href="/listings/<%= data._id %>/edit"
@@ -32,8 +33,10 @@
       <button class="btn btn-dark offset-5">Delete</button>
     </form>
   </div>
+  <% } %>
 
   <div class="col-8 offset-3 mb-3">
+    <% if (currUser) { %>
     <hr />
     <h4>Leave a review</h4>
     <form
@@ -67,7 +70,7 @@
       </div>
       <button class="btn btn-outline-dark">Submit</button>
     </form>
-
+    <% } %>
     <hr />
 
     <h4>All Reviews</h4>
@@ -75,7 +78,7 @@
       <% for( review of data.reviews) { %>
       <div class="card col-5 ms-3 mb-3">
         <div class="card-body">
-          <h5 class="card-title">Khan</h5>
+          <h5 class="card-title">@<%= review.author.username %></h5>
           <p class="card-text"><%= review.rating %> stars</p>
           <p class="card-text"><%= review.comment %></p>
           <form
