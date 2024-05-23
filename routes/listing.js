@@ -37,7 +37,7 @@ router.get(
   "/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    let data = await Listing.findById(id).populate("reviews");
+    let data = await Listing.findById(id).populate("reviews").populate("owner");
     // console.log(data);
     // console.log(data.price.toLocaleString("en-IN"));
     if (!data) {
@@ -70,6 +70,7 @@ router.post(
 
     // 2nd option
     let newList = new Listing(req.body.listing);
+    newList.owner = req.user._id;
     // console.log(newList);
     await newList.save();
     req.flash("success", "New Listing Created");
