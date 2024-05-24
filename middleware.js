@@ -1,5 +1,6 @@
 const Listing = require("./models/listing.model");
 const Review = require("./models/review.model");
+const { listingSchema } = require("./schema");
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
@@ -36,4 +37,16 @@ module.exports.isReviewAuthor = async (req, res, next) => {
     return res.redirect(`/listings/${id}`);
   }
   next();
+};
+
+// Joi Validation middleware(server side)
+module.exports.validateListing = (req, res, next) => {
+  let { error } = listingSchema.validate(req.body);
+  console.log(error);
+  if (error) {
+    let errMsg = err.details.map((el) => el.message).join(",");
+    throw new ExpressError(400, errMsg);
+  } else {
+    next();
+  }
 };
