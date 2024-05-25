@@ -39,8 +39,11 @@ module.exports.createRoute = async (req, res) => {
   // });
 
   // 2nd option
+  let url = req.file.path;
+  let filename = req.file.filename;
   let newList = new Listing(req.body.listing);
   newList.owner = req.user._id;
+  newList.image = { url, filename };
   // console.log(newList);
   await newList.save();
   req.flash("success", "New Listing Created");
