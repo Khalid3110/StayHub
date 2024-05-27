@@ -103,3 +103,11 @@ body {
 .btns {
   display: flex;
 }
+
+/* Map */
+
+#map {
+  height: 300px;
+  width: 90vh;
+  border-radius: 1rem;
+}
