@@ -54,6 +54,7 @@ module.exports.createRoute = async (req, res) => {
   let newList = new Listing(req.body.listing);
   newList.owner = req.user._id;
   newList.image = { url, filename };
+  newList.geometry = response.body.features[0].geometry;
   // console.log(newList);
   await newList.save();
   req.flash("success", "New Listing Created");
@@ -80,15 +81,23 @@ module.exports.updateListing = async (req, res) => {
   if (!req.body.listing) {
     throw new ExpressError(400, "Send Valid Data");
   }
+  let response = await geocodingClient
+    .forwardGeocode({
+      query: req.body.listing.location,
+      limit: 1,
+    })
+    .send();
   let { id } = req.params;
   let listing = await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-
+  listing.geometry = response.body.features[0].geometry;
+  // await listing.save();
   if (typeof req.file !== "undefined") {
     let url = req.file.path;
     let filename = req.file.filename;
     listing.image = { url, filename };
-    await listing.save();
   }
+  let updateListing = await listing.save();
+  console.log(updateListing);
 
   req.flash("success", "Listing Updated");
   res.redirect(`/listings/${id}`);
